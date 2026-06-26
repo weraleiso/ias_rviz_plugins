@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+
+<package format="3">
+    <name>rviz_plugin_display_projector</name>
+    <version>1.0.0</version>
+    <description>An RViz Display plugin to project an image message to a scalable planar texture in 3D.</description>
+
+    <license>BSD</license>
+    <author>Werner Alexander Isop</author>
+    <author email="isop.alexander@gmail.com">Werner Alexander Isop</author>
+    <maintainer email="isop.alexander@gmail.com">Werner Alexander Isop</maintainer>
+    <url type="website">https://github.com/weraleiso/rviz_plugin_display_projector</url>
+    <url type="repository">https://github.com/weraleiso/rviz_plugin_display_projector</url>
+    <url type="bugtracker">https://github.com/weraleiso/rviz_plugin_display_projector</url>
+
+    <!--Related utilized or refactored original work(s)/ROS-Package(s):-->
+    <author email="fbacim@vt.edu">Felipe Bacim</author>
+    <author email="mohit.appi@gmail.com">Mohit Shridhar</author>
+    <url type="repository">https://github.com/MohitShridhar/rviz_textured_quads</url>
+    <maintainer email="lucasw_backwards@gmail.com">Lucas Walter</maintainer>
+    <url type="repository">https://github.com/lucasw/rviz_textured_quads</url>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <depend>pluginlib</depend>
+    <depend>rviz_common</depend>
+    <depend>rviz_rendering</depend>
+    <depend>cv_bridge</depend>
+    <depend>image_transport</depend>
+    <depend>OpenCV</depend>
+
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+
+    <buildtool_depend>rosidl_default_generators</buildtool_depend>
+    <exec_depend>rosidl_default_runtime</exec_depend>
+    <member_of_group>rosidl_interface_packages</member_of_group>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

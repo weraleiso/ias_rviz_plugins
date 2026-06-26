@@ -1,0 +1,5 @@
+<library path="rviz_plugin_display_projector">
+    <class name="Projector" type="rviz_plugin_display_projector::RVizPluginDisplayProjector" base_class_type="rviz_common::Display">
+        <description>An RViz Display plugin to project an image message to a scalable planar texture in 3D.</description>
+    </class>
+</library>

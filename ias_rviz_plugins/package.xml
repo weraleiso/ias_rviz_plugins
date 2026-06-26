@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+
+<package format="3">
+    <name>ias_rviz_plugins</name>
+    <version>1.0.0</version>
+    <description>A collection of RViz plugins for the InterActiveSpace (IAS).</description>
+
+    <license>BSD</license>
+    <author>Werner Alexander Isop</author>
+    <author email="isop.alexander@gmail.com">Werner Alexander Isop</author>
+    <maintainer email="isop.alexander@gmail.com">Werner Alexander Isop</maintainer>
+    <url type="website">https://github.com/weraleiso/ias_rviz_plugins</url>
+    <url type="repository">https://github.com/weraleiso/ias_rviz_plugins</url>
+    <url type="bugtracker">https://github.com/weraleiso/ias_rviz_plugins</url>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+    <exec_depend>rviz_plugin_display_lighting</exec_depend>
+    <exec_depend>rviz_plugin_display_particles</exec_depend>
+    <exec_depend>rviz_plugin_display_projector</exec_depend>
+    <exec_depend>rviz_plugin_display_stereoscopic</exec_depend>
+    <exec_depend>rviz_plugin_view_animated</exec_depend>
+    <exec_depend>rviz_plugin_view_animated_msgs</exec_depend>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

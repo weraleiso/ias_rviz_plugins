@@ -1,0 +1,254 @@
+ros2 topic pub --once /rviz_plugin_view_animated_1/trajectory rviz_plugin_view_animated_msgs/msg/ViewTrajectory \
+"view_trajectory:
+- view_tf_frame: 'ias_wor_universe'
+  view_mode: 0
+  view_speed_profile: 0
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_1'
+    point:
+      x: 3.0
+      y: 3.0
+      z: 3.0
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_universe'
+    point:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_1'
+    vector:
+      x: 0.0
+      y: 1.0
+      z: 1.0
+- view_tf_frame: 'ias_wor_universe'
+  view_mode: 0
+  view_speed_profile: 1
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_2'
+    point:
+      x: -3.0
+      y: -3.0
+      z: 3.0
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_2'
+    point:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_2'
+    vector:
+      x: 0.0
+      y: 1.0
+      z: 1.0
+- view_tf_frame: 'ias_wor_test_2'
+  view_mode: 0
+  view_speed_profile: 2
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    point:
+      x: 3.0
+      y: 0.0
+      z: 3.0
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    point:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    vector:
+      x: 0.0
+      y: 1.0
+      z: 0.0
+- view_tf_frame: 'ias_wor_test_3'
+  view_mode: 0
+  view_speed_profile: 3
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_2'
+    point:
+      x: -1.0
+      y: -1.0
+      z: 0.1
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    point:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_2'
+    vector:
+      x: 0.0
+      y: 0.0
+      z: 1.0
+- view_tf_frame: 'ias_wor_universe'
+  view_mode: 1
+  view_speed_profile: 4
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_universe'
+    point:
+      x: 0.0
+      y: 0.0
+      z: 3.0
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_universe'
+    point:
+      x: 1.0
+      y: 0.0
+      z: -1.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_universe'
+    vector:
+      x: 0.0
+      y: 0.0
+      z: 1.0
+- view_tf_frame: 'ias_wor_test_3'
+  view_mode: 1
+  view_speed_profile: 5
+  view_duration:
+    data: 3.0
+  view_target_fps:
+    data: 20.0
+  view_frame_by_frame_enabled: true
+  view_vector_up_lock_enabled: true
+  view_pose_enabled: true
+  view_live_enabled: true
+  view_mouse_enabled: true
+  view_eye:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    point:
+      x: -3.0
+      y: -3.0
+      z: 3.0
+  view_focus:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    point:
+      x: 1.0
+      y: 1.0
+      z: -1.0
+  view_up:
+    header:
+      stamp:
+        sec: 0
+        nanosec: 0
+      frame_id: 'ias_wor_test_3'
+    vector:
+      x: 0.0
+      y: 0.0
+      z: 1.0"

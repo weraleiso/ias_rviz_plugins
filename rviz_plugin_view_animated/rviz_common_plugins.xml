@@ -1,0 +1,5 @@
+<library path="rviz_plugin_view_animated">
+    <class name="Animated (rviz_plugin_view_animated)" type="rviz_plugin_view_animated::RVizPluginViewAnimated" base_class_type="rviz_common::ViewController">
+        <description>An RViz ViewController plugin to generate animated views.</description>
+    </class>
+</library>

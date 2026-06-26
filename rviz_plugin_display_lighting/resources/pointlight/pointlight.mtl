@@ -1,0 +1,22 @@
+#
+## Alias OBJ Material File
+# Exported from SketchUp, (c) 2000-2012 Trimble Navigation Limited
+
+newmtl Blacktop_New
+Ka 0.000000 0.000000 0.000000
+Kd 0.117647 0.117647 0.117647
+Ks 0.330000 0.330000 0.330000
+map_Kd pointlight/Blacktop_New.jpg
+
+newmtl Metal_Seamed
+Ka 0.000000 0.000000 0.000000
+Kd 0.462745 0.466667 0.450980
+Ks 0.330000 0.330000 0.330000
+map_Kd pointlight/Metal_Seamed.jpg
+
+newmtl Philips_20Incandescent_20A_19_20Light_20Bulb
+Ka 0.000000 0.000000 0.000000
+Kd 0.909804 0.909804 0.905882
+Ks 0.330000 0.330000 0.330000
+map_Kd pointlight/Philips_20Incandescent_20A_19_20Light_20Bulb.jpg
+

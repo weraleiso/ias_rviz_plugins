@@ -1,0 +1,5 @@
+<library path="rviz_plugin_display_stereoscopic">
+    <class name="Stereoscopic" type="rviz_plugin_display_stereoscopic::RVizPluginDisplayStereoscopic" base_class_type="rviz_common::Display">
+        <description>An RViz Display plugin to create a distorted stereoscopic view for VR applications.</description>
+    </class>
+</library>

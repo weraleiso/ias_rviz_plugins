@@ -1,0 +1,5 @@
+<library path="rviz_plugin_display_particles">
+    <class name="Particles" type="rviz_plugin_display_particles::RVizPluginDisplayParticles" base_class_type="rviz_common::Display">
+        <description>An RViz Display plugin to create particle effects.</description>
+    </class>
+</library>

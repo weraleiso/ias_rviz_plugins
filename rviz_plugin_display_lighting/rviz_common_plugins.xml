@@ -1,0 +1,5 @@
+<library path="rviz_plugin_display_lighting">
+    <class name="Lighting" type="rviz_plugin_display_lighting::RVizPluginDisplayLighting" base_class_type="rviz_common::Display">
+        <description>An RViz Display plugin to enable lighting and shadows.</description>
+    </class>
+</library>

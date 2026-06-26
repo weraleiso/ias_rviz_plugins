@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+
+<package format="3">
+    <name>rviz_plugin_view_animated</name>
+    <version>1.0.0</version>
+    <description>An RViz ViewController plugin to generate animated views.</description>
+
+    <license>BSD</license>
+    <author>Werner Alexander Isop</author>
+    <author email="isop.alexander@gmail.com">Werner Alexander Isop</author>
+    <maintainer email="isop.alexander@gmail.com">Werner Alexander Isop</maintainer>
+    <url type="website">https://github.com/weraleiso/rviz_plugin_view_animated</url>
+    <url type="repository">https://github.com/weraleiso/rviz_plugin_view_animated</url>
+    <url type="bugtracker">https://github.com/weraleiso/rviz_plugin_view_animated</url>
+
+    <!--Related utilized or refactored original work(s)/ROS-Package(s):-->
+    <author email="adamleeper@gmail.com">Adam Leeper</author>
+    <maintainer email="evanflynn.msu@gmail.com">Evan Flynn</maintainer>
+    <url type="repository">https://github.com/ros-visualization/rviz_animated_view_controller</url>
+    <author email="adamleeper@gmail.com">Adam Leeper</author>
+    <maintainer email="andyz@utexas.edu">Andy Zelenak</maintainer>
+    <url type="repository">https://github.com/UTNuclearRoboticsPublic/rviz_animated_view_controller</url>
+    <author email="adamleeper@gmail.com">Adam Leeper</author>
+    <author email="s6jarazl@uni-bonn.de">Jan Razlaw</author>
+    <url type="repository">https://github.com/AIS-Bonn/rviz_cinematographer</url>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <depend>pluginlib</depend>
+    <depend>rviz_common</depend>
+    <depend>rviz_rendering</depend>
+    <depend>rviz_plugin_view_animated_msgs</depend>
+    <depend>cv_bridge</depend>
+    <depend>image_transport</depend>
+    <depend>OpenCV</depend>
+
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+
+    <buildtool_depend>rosidl_default_generators</buildtool_depend>
+    <exec_depend>rosidl_default_runtime</exec_depend>
+    <member_of_group>rosidl_interface_packages</member_of_group>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>
