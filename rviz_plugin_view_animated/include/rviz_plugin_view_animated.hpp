@@ -134,6 +134,8 @@ namespace rviz_plugin_view_animated
         // OGRE properties
         Ogre::TexturePtr m_tep_view_live;
         Ogre::RenderTexture* m_p_ret_view_live;
+        Ogre::Vector3 m_ov3_focus_old;
+        Ogre::Vector3 m_ov3_focus_local_old;
         Ogre::Vector3 m_ov3_tf_frame_position;
         Ogre::Quaternion m_oqu_tf_frame_orientation;
 

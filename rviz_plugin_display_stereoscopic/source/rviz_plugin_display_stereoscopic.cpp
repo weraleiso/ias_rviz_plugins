@@ -35,18 +35,6 @@ namespace rviz_plugin_display_stereoscopic
 
         RVIZ_COMMON_LOG_INFO_STREAM("rviz_plugin_display_stereoscopic::RVizPluginDisplayStereoscopic - Initialized!");
     }
-    void RVizPluginDisplayStereoscopic::onUnload()
-    {
-        CleanupStereoscopicTexture();
-    }
-    void RVizPluginDisplayStereoscopic::onLoad()
-    {
-        // Do nothing for now...
-    }
-    void RVizPluginDisplayStereoscopic::onActivate()
-    {
-        // Do nothing for now...
-    }
     void RVizPluginDisplayStereoscopic::onDisable()
     {
         // Do nothing for now...
@@ -209,6 +197,15 @@ namespace rviz_plugin_display_stereoscopic
         m_mat_distortion_coefficients.at<double>(1,0)=0.0;
         m_mat_distortion_coefficients.at<double>(2,0)=0.0;
         m_mat_distortion_coefficients.at<double>(3,0)=0.0;
+
+        cv::initUndistortRectifyMap(m_mat_camera_matrix,
+                                    m_mat_distortion_coefficients,
+                                    cv::Mat(),
+                                    m_mat_camera_matrix,
+                                    cv::Size(m_i_stereoscopic_view_width,m_i_stereoscopic_view_height),
+                                    CV_32FC1,
+                                    m_mat_undistort_map_1,
+                                    m_mat_undistort_map_2);
     }
     void RVizPluginDisplayStereoscopic::UpdateStereoscopicView()
     {
@@ -230,9 +227,8 @@ namespace rviz_plugin_display_stereoscopic
         memcpy(&mat_img_stereoscopic_eye_left->data[0],uc_data_eye_left,uc_data_size);
         memcpy(&mat_img_stereoscopic_eye_right->data[0],uc_data_eye_right,uc_data_size);
 
-        // Be careful with RViz Frame Rate and resolution, since undistort method may cause heavy CPU load!
-        cv::undistort(*mat_img_stereoscopic_eye_left,*mat_img_stereoscopic_eye_left_dist,m_mat_camera_matrix,m_mat_distortion_coefficients);
-        cv::undistort(*mat_img_stereoscopic_eye_right,*mat_img_stereoscopic_eye_right_dist,m_mat_camera_matrix,m_mat_distortion_coefficients);
+        cv::remap(*mat_img_stereoscopic_eye_left,*mat_img_stereoscopic_eye_left_dist,m_mat_undistort_map_1,m_mat_undistort_map_2,cv::INTER_LINEAR);
+        cv::remap(*mat_img_stereoscopic_eye_right,*mat_img_stereoscopic_eye_right_dist,m_mat_undistort_map_1,m_mat_undistort_map_2,cv::INTER_LINEAR);
         cv::hconcat(*mat_img_stereoscopic_eye_left_dist,*mat_img_stereoscopic_eye_right_dist,*mat_img_stereoscopic_portable);
 
         m_msg_img_stereoscopic_portable=cv_bridge::CvImage(std_msgs::msg::Header(),"rgb8",*mat_img_stereoscopic_portable).toImageMsg();
@@ -249,7 +245,7 @@ namespace rviz_plugin_display_stereoscopic
     }
     RVizPluginDisplayStereoscopic::~RVizPluginDisplayStereoscopic()
     {
-        // Do nothing for now...
+        CleanupStereoscopicTexture();
     }
 
 }  // namespace rviz_plugin_display_stereoscopic

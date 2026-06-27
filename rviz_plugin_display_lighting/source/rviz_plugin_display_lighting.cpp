@@ -294,11 +294,17 @@ namespace rviz_plugin_display_lighting
     }
     void RVizPluginDisplayLighting::UpdateLightingColorsHSV()
     {
-        // Color schemes are:
-        // RGB ... classic red/green/blue color scheme (RGB Cube)
-        // HSB/HSV ... color scheme defined by Hue, Saturation and Brightness/Value (HSB/HSV Cylinder)
-        // HSL ... color scheme that is similar to HSB/HSV, however has a different color range (HSL Bi-Cone)
-        // Also check: https://medium.com/innovaccer-design/rgb-vs-hsb-vs-hsl-demystified-1992d7273d3a
+        /*
+        Color schemes are:
+        RGB ... classic red/green/blue color scheme (RGB Cube)
+        HSB/HSV ... color scheme defined by Hue, Saturation and Brightness/Value (HSB/HSV Cylinder)
+        HSL ... color scheme that is similar to HSB/HSV, however has a different color range (HSL Bi-Cone)
+        Also check: https://medium.com/innovaccer-design/rgb-vs-hsb-vs-hsl-demystified-1992d7273d3a
+        HSB/HSV color scheme: Hue determines type of color, Saturation is the color intensity, Value is representative for the brightness.
+        [0 to 255] is equivalent to [0 to 360 deg] for the color circle, and equivalent to [0.0 to +1.0] for the saturation and value.
+        YCbCr color scheme: According to JPEG standard Y′, Cb and Cr have the full 8-bit range.
+        [0 to 255] is equivalent to [-1.0 to +1.0] in the CbCr plane.
+        */
         Ogre::ColourValue ocl_lighting_diff_spec_hsv;
         ocl_lighting_diff_spec_hsv.setHSB(m_prp_lighting_color_diff_spec_hsv->getVector().x/255.0,
                                           m_prp_lighting_color_diff_spec_hsv->getVector().y/255.0,
@@ -315,9 +321,17 @@ namespace rviz_plugin_display_lighting
     }
     void RVizPluginDisplayLighting::UpdateLightingColorsYCbCr()
     {
-        // YCbCr Color scheme:
-        // According to JPEG standard Y′, CB and CR have the full 8-bit range [0 to 255])
-        // [0 to 255] ... is equivalent to [-1.0 to +1.0] in the CbCr plane
+        /*
+        Color schemes are:
+        RGB ... classic red/green/blue color scheme (RGB Cube)
+        HSB/HSV ... color scheme defined by Hue, Saturation and Brightness/Value (HSB/HSV Cylinder)
+        HSL ... color scheme that is similar to HSB/HSV, however has a different color range (HSL Bi-Cone)
+        Also check: https://medium.com/innovaccer-design/rgb-vs-hsb-vs-hsl-demystified-1992d7273d3a
+        HSB/HSV color scheme: Hue determines type of color, Saturation is the color intensity, Value is representative for the brightness.
+        [0 to 255] is equivalent to [0 to 360 deg] for the color circle, and equivalent to [0.0 to +1.0] for the saturation and value.
+        YCbCr color scheme: According to JPEG standard Y′, Cb and Cr have the full 8-bit range.
+        [0 to 255] is equivalent to [-1.0 to +1.0] in the CbCr plane.
+        */
         tf2::Vector3 tf_vc3_light_diff_spec_ycbcr(m_prp_lighting_color_diff_spec_ycbcr->getVector().x,  // Y'
                                                   m_prp_lighting_color_diff_spec_ycbcr->getVector().y,  // Cb
                                                   m_prp_lighting_color_diff_spec_ycbcr->getVector().z); // Cr

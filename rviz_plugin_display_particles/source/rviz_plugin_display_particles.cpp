@@ -52,7 +52,7 @@ namespace rviz_plugin_display_particles
 
         // Initialize OGRE properties
         UpdateParticlesOgreResources();
-        //UpdateParticlesSandbox();
+        // TODO: UpdateParticlesSandbox();
 
         setStatusStd(rviz_common::properties::StatusProperty::Ok,"Particles","Ok!");
         RVIZ_COMMON_LOG_INFO_STREAM("rviz_plugin_display_particles::RVizPluginDisplayParticles - Initialized!");

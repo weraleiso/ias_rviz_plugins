@@ -84,6 +84,8 @@ namespace rviz_plugin_display_stereoscopic
         cv::Mat* mat_img_stereoscopic_portable;
         cv::Mat m_mat_camera_matrix;
         cv::Mat m_mat_distortion_coefficients;
+        cv::Mat m_mat_undistort_map_1;
+        cv::Mat m_mat_undistort_map_2;
 
         // RViz properties       
         std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_stereoscopic_view_image_topic;
@@ -116,9 +118,6 @@ namespace rviz_plugin_display_stereoscopic
 
         // Inherited methods
         void onInitialize();
-        void onUnload();
-        void onLoad();
-        void onActivate();
         void onDisable();
         void onEnable();
         void reset();

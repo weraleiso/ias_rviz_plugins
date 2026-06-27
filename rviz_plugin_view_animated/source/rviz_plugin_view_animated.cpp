@@ -104,12 +104,16 @@ namespace rviz_plugin_view_animated
         m_prp_view_transition_enabled->setBool(false);
         m_prp_view_live_publish_enabled->setBool(false);
         m_prp_view_live_record_enabled->setBool(false);
-        cb_prp_update_view_tf_frame();
-        m_prp_view_direction->setVector(Ogre::Vector3::ZERO-Ogre::Vector3::UNIT_SCALE);
-        m_prp_view_orientation->setQuaternion(Ogre::Quaternion(1.0,0.0,0.0,0.0));
-        m_f_view_distance=(m_prp_view_eye->getVector()-m_prp_view_focus->getVector()).length();
-        m_prp_view_distance->setFloat(m_f_view_distance);
         m_prp_view_live_color->setColor(QColor(48,48,48));
+
+        m_prp_view_eye_local->setVector(3.0*Ogre::Vector3::UNIT_SCALE);
+        m_prp_view_focus_local->setVector(Ogre::Vector3::ZERO);
+        m_prp_view_up_local->setVector(Ogre::Vector3::UNIT_Z);
+        cb_prp_update_view_tf_frame();
+
+        m_shp_focal->setPosition(m_prp_view_focus->getVector());
+        m_shp_focal->setScale(Ogre::Vector3(0.1f,0.1f,0.05f));
+        m_shp_focal->setColor(1.0f,1.0f,0.0f,1.0f);
     }
     void RVizPluginViewAnimated::update(float dt,float ros_dt)
     {
@@ -289,11 +293,16 @@ namespace rviz_plugin_view_animated
             }
             else if(m_prp_view_mode->getStdString()=="FPS")
             {
-                UpdateViewEyeFocus(m_i_view_diff_x*0.01f,-m_i_view_diff_y*0.01f,0.0f);
+                UpdateViewEyeFocus(-m_i_view_diff_x*0.01f,m_i_view_diff_y*0.01f,0.0f);
             }
         } // Right-button
         else if(event.right())
         {
+            if(event.shift()||(m_prp_view_mode->getStdString()=="ORBIT"))
+            {
+                setCursor(Zoom);
+                UpdateViewEye(0.0f,0.0f,m_i_view_diff_y*0.01f*m_f_view_distance);
+            }
             if(event.shift()||(m_prp_view_mode->getStdString()=="FPS"))
             {
                 setCursor(MoveZ);
@@ -301,8 +310,7 @@ namespace rviz_plugin_view_animated
             }
             else
             {
-                setCursor(Zoom);
-                UpdateViewEye(0.0f,0.0f,m_i_view_diff_y*0.01f*m_f_view_distance);
+                // Do nothing for now...
             }
         }
         else
@@ -331,13 +339,20 @@ namespace rviz_plugin_view_animated
             if(m_prp_view_mode->getStdString()=="ORBIT")
             {
                 m_prp_view_mode->setStdString("FPS");
+                m_ov3_focus_old=m_prp_view_focus->getVector();
+                m_ov3_focus_local_old=m_prp_view_focus_local->getVector();
                 m_prp_view_focus->setVector(m_prp_view_direction->getVector());
             }
             else if(m_prp_view_mode->getStdString()=="FPS")
             {
                 m_prp_view_mode->setStdString("ORBIT");
+                m_prp_view_focus->setVector(m_ov3_focus_old);
+                m_prp_view_focus_local->setVector(m_ov3_focus_local_old);
             }
-            else; // Do nothing for now...
+            else
+            {
+                // Do nothing for now...
+            }
             UpdateViewPose();
         }
     }
@@ -635,6 +650,8 @@ namespace rviz_plugin_view_animated
         if(m_prp_view_mode->getStdString()=="ORBIT")
         {
             m_prp_view_direction->setVector(m_prp_view_focus->getVector()-m_prp_view_eye->getVector());
+            m_f_view_distance=(m_prp_view_eye->getVector()-m_prp_view_focus->getVector()).length();
+            m_prp_view_distance->setFloat(m_f_view_distance);
 
             m_shp_focal->setPosition(m_prp_view_focus->getVector());
             m_shp_focal->setScale(Ogre::Vector3(0.1f,0.1f,0.05f));
@@ -646,13 +663,14 @@ namespace rviz_plugin_view_animated
 
             m_shp_focal->setPosition(m_prp_view_eye->getVector()+m_prp_view_direction->getVector());
             m_shp_focal->setScale(Ogre::Vector3(0.025f,0.025f,0.0125f));
-            m_shp_focal->setColor(1.0f,1.0f,0.0f,0.5f);
+            m_shp_focal->setColor(0.0f,1.0f,1.0f,0.5f);
         }
-        else; // Do nothing for now...
+        else
+        {
+            // Do nothing for now...
+        }
         m_prp_view_orientation->setQuaternion(getQuaternionFromDirection(m_prp_view_direction->getVector(),m_prp_view_up->getVector()));
         camera_->setDirection(m_prp_view_direction->getVector());
-        m_f_view_distance=(m_prp_view_eye->getVector()-m_prp_view_focus->getVector()).length();
-        m_prp_view_distance->setFloat(m_f_view_distance);
     }
     void RVizPluginViewAnimated::UpdateViewYawPitchRoll(float f_yaw,float f_pitch,float f_roll)
     {
@@ -668,9 +686,10 @@ namespace rviz_plugin_view_animated
             {
                 oqu_view_new=oqu_view_new*oqu_pitch.Inverse();
             }
-            // m_prp_view_direction vector gets finally derived in the UpdateViewPose() method and updates view properly!
             Ogre::Vector3 ov3_pos_eye_new=m_prp_view_focus->getVector()+m_f_view_distance*oqu_view_new.zAxis();
             m_prp_view_eye->setVector(ov3_pos_eye_new);
+            // The m_prp_view_direction vector gets finally derived in the UpdateViewPose()
+            // this updates the view properly!
         }
         else if(m_prp_view_mode->getStdString()=="FPS")
         {
@@ -682,6 +701,8 @@ namespace rviz_plugin_view_animated
             oqu_camera_yaw.FromAngleAxis(Ogre::Radian(f_yaw_new),Ogre::Vector3::UNIT_Z);
             oqu_camera_pitch.FromAngleAxis(Ogre::Radian(f_pitch_new),Ogre::Vector3::UNIT_Y);
             m_prp_view_focus->setVector(oqu_camera_yaw*oqu_camera_pitch*oqu_ogre_camera_rotation*Ogre::Vector3::NEGATIVE_UNIT_Z);
+            // The m_prp_view_direction vector gets finally derived in the UpdateViewPose()
+            // this updates the view properly!
         }
         else
         {
@@ -890,11 +911,11 @@ namespace rviz_plugin_view_animated
     }
     Ogre::Quaternion RVizPluginViewAnimated::getQuaternionFromDirection(const Ogre::Vector3& direction,const Ogre::Vector3& upHint)
     {
-        Ogre::Vector3 forward = direction.normalisedCopy();
-        Ogre::Vector3 right = upHint.crossProduct(forward).normalisedCopy();
-        Ogre::Vector3 up = forward.crossProduct(right);
+        Ogre::Vector3 forward=direction.normalisedCopy();
+        Ogre::Vector3 right=upHint.crossProduct(forward).normalisedCopy();
+        Ogre::Vector3 up=forward.crossProduct(right);
         Ogre::Matrix3 rot;
-        rot.FromAxes(right, up, forward);
+        rot.FromAxes(right,up,forward);
         return Ogre::Quaternion(rot);
     }
     Ogre::Vector3 RVizPluginViewAnimated::getVector3FromQuaternion(Ogre::Quaternion oqu_input)
@@ -966,20 +987,14 @@ namespace rviz_plugin_view_animated
 
             int i_img_width=m_prp_view_live_width->getInt();
             int i_img_height=m_prp_view_live_height->getInt();
-            Ogre::PixelBox pb(i_img_width,i_img_height,1,Ogre::PF_BYTE_RGB,m_ui8_buffer.data());
+            Ogre::PixelBox pb(i_img_width,i_img_height,1,Ogre::PF_BYTE_BGR,m_ui8_buffer.data());
             m_p_ret_view_live->copyContentsToMemory(pb,Ogre::RenderTarget::FB_AUTO);
-            QImage qim_view_live(m_ui8_buffer.data(),i_img_width,i_img_height,i_img_width*3,QImage::Format_RGB888);
+            QImage qim_view_live(m_ui8_buffer.data(),i_img_width,i_img_height,i_img_width*3,QImage::Format_BGR888);
 
             // If enabled, record MJPEG video file:
             if(m_prp_view_live_record_enabled->getBool()==true)
             {
-                cv::Mat mat_view_live_frame(
-                    qim_view_live.height(),
-                    qim_view_live.width(),
-                    CV_8UC3,
-                    const_cast<uchar*>(qim_view_live.bits()),
-                    qim_view_live.bytesPerLine()
-                    );
+                cv::Mat mat_view_live_frame(qim_view_live.height(),qim_view_live.width(),CV_8UC3,const_cast<uchar*>(qim_view_live.bits()),qim_view_live.bytesPerLine());
                 m_vwt_view_live.write(mat_view_live_frame);
             }
 
@@ -987,7 +1002,7 @@ namespace rviz_plugin_view_animated
             m_msg_img_view_live.header.stamp=m_hdl_node->get_clock()->now();
             m_msg_img_view_live.height=qim_view_live.height();
             m_msg_img_view_live.width=qim_view_live.width();
-            m_msg_img_view_live.encoding=sensor_msgs::image_encodings::RGB8;
+            m_msg_img_view_live.encoding=sensor_msgs::image_encodings::BGR8;
             m_msg_img_view_live.is_bigendian=false;
             m_msg_img_view_live.step=static_cast<sensor_msgs::msg::Image::_step_type>(qim_view_live.bytesPerLine());
             m_msg_img_view_live.data.resize(qim_view_live.sizeInBytes());
