@@ -89,8 +89,8 @@ namespace rviz_plugin_display_stereoscopic
 
         // RViz properties       
         std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_stereoscopic_view_image_topic;
-        std::unique_ptr<rviz_common::properties::IntProperty> m_prp_stereoscopic_view_width;
-        std::unique_ptr<rviz_common::properties::IntProperty> m_prp_stereoscopic_view_height;
+        std::unique_ptr<rviz_common::properties::IntProperty> m_prp_stereoscopic_view_res_x;
+        std::unique_ptr<rviz_common::properties::IntProperty> m_prp_stereoscopic_view_res_y;
         std::unique_ptr<rviz_common::properties::FloatProperty> m_prp_stereoscopic_ipd;
         std::unique_ptr<rviz_common::properties::FloatProperty> m_prp_stereoscopic_dist;
 
@@ -109,8 +109,8 @@ namespace rviz_plugin_display_stereoscopic
 
         // Helper properties
         std::string m_s_rviz_plugin_namespace;
-        int m_i_stereoscopic_view_width;
-        int m_i_stereoscopic_view_height;
+        int m_i_stereoscopic_view_res_x;
+        int m_i_stereoscopic_view_res_y;
         bool m_b_ogr_camera_initialized;
 
 

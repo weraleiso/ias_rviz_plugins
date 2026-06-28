@@ -15,15 +15,15 @@ namespace rviz_plugin_display_stereoscopic
         // Initialize helper properties
         si_resource_name_count++;
         m_s_rviz_plugin_namespace="rviz_plugin_display_stereoscopic_"+std::to_string(si_resource_name_count)+"/";
-        m_i_stereoscopic_view_width=640;
-        m_i_stereoscopic_view_height=720;
+        m_i_stereoscopic_view_res_x=640;
+        m_i_stereoscopic_view_res_y=720;
         m_b_ogr_camera_initialized=false;
 
         // Initialize RViz properties
-        m_prp_stereoscopic_view_image_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("View Image Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"view"),"sensor_msgs/msg/Image","View Trajectory Topic.",this,SLOT(cb_prp_update_stereoscopic_topics()));
+        m_prp_stereoscopic_view_image_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Image Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"view"),"sensor_msgs/msg/Image","Image Topic.",this,SLOT(cb_prp_update_stereoscopic_topics()));
         m_prp_stereoscopic_view_image_topic->initialize(m_hdl_node_rviz);
-        m_prp_stereoscopic_view_width=std::make_unique<rviz_common::properties::IntProperty>("Per Eye View Width",m_i_stereoscopic_view_width,"Per Eye View Width.",this,SLOT(cb_prp_update_stereoscopic_resolution()));
-        m_prp_stereoscopic_view_height=std::make_unique<rviz_common::properties::IntProperty>("Per Eye View Height",m_i_stereoscopic_view_height,"Per Eye View Height.",this,SLOT(cb_prp_update_stereoscopic_resolution()));
+        m_prp_stereoscopic_view_res_x=std::make_unique<rviz_common::properties::IntProperty>("Per Eye Resolution X",m_i_stereoscopic_view_res_x,"Per Eye Resolution X.",this,SLOT(cb_prp_update_stereoscopic_resolution()));
+        m_prp_stereoscopic_view_res_y=std::make_unique<rviz_common::properties::IntProperty>("Per Eye Resolution Y",m_i_stereoscopic_view_res_y,"Per Eye Resolution Y.",this,SLOT(cb_prp_update_stereoscopic_resolution()));
         m_prp_stereoscopic_ipd=std::make_unique<rviz_common::properties::FloatProperty>("Interpupillary Distance",0.065,"Interpupillary Distance.",this,SLOT(cb_prp_update_stereoscopic_ipd()));
         m_prp_stereoscopic_dist=std::make_unique<rviz_common::properties::FloatProperty>("Radial Distortion",1.0,"Radial Distortion.",this,SLOT(cb_prp_update_stereoscopic_distortion()));
 
@@ -122,8 +122,8 @@ namespace rviz_plugin_display_stereoscopic
                                         "display_stereoscopic_texture_eye_left"+std::to_string(si_resource_name_count),
                                         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                                         Ogre::TEX_TYPE_2D,
-                                        m_i_stereoscopic_view_width,
-                                        m_i_stereoscopic_view_height,
+                                        m_i_stereoscopic_view_res_x,
+                                        m_i_stereoscopic_view_res_y,
                                         0,
                                         Ogre::PF_R8G8B8,
                                         Ogre::TU_RENDERTARGET);
@@ -139,8 +139,8 @@ namespace rviz_plugin_display_stereoscopic
                                         "display_stereoscopic_texture_eye_right"+std::to_string(si_resource_name_count),
                                         Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                                         Ogre::TEX_TYPE_2D,
-                                        m_i_stereoscopic_view_width,
-                                        m_i_stereoscopic_view_height,
+                                        m_i_stereoscopic_view_res_x,
+                                        m_i_stereoscopic_view_res_y,
                                         0,
                                         Ogre::PF_R8G8B8,
                                         Ogre::TU_RENDERTARGET);
@@ -151,11 +151,11 @@ namespace rviz_plugin_display_stereoscopic
         m_ogr_render_texture_eye_right->getViewport(0)->setOverlaysEnabled(false);
 
         // Init OpenCV textures
-        mat_img_stereoscopic_eye_left=new cv::Mat(m_i_stereoscopic_view_height,m_i_stereoscopic_view_width,CV_8UC3);
-        mat_img_stereoscopic_eye_right=new cv::Mat(m_i_stereoscopic_view_height,m_i_stereoscopic_view_width,CV_8UC3);
-        mat_img_stereoscopic_eye_left_dist=new cv::Mat(m_i_stereoscopic_view_height,m_i_stereoscopic_view_width,CV_8UC3);
-        mat_img_stereoscopic_eye_right_dist=new cv::Mat(m_i_stereoscopic_view_height,m_i_stereoscopic_view_width,CV_8UC3);
-        mat_img_stereoscopic_portable=new cv::Mat(m_i_stereoscopic_view_height,m_i_stereoscopic_view_width*2,CV_8UC3);
+        mat_img_stereoscopic_eye_left=new cv::Mat(m_i_stereoscopic_view_res_y,m_i_stereoscopic_view_res_x,CV_8UC3);
+        mat_img_stereoscopic_eye_right=new cv::Mat(m_i_stereoscopic_view_res_y,m_i_stereoscopic_view_res_x,CV_8UC3);
+        mat_img_stereoscopic_eye_left_dist=new cv::Mat(m_i_stereoscopic_view_res_y,m_i_stereoscopic_view_res_x,CV_8UC3);
+        mat_img_stereoscopic_eye_right_dist=new cv::Mat(m_i_stereoscopic_view_res_y,m_i_stereoscopic_view_res_x,CV_8UC3);
+        mat_img_stereoscopic_portable=new cv::Mat(m_i_stereoscopic_view_res_y,m_i_stereoscopic_view_res_x*2,CV_8UC3);
     }
     void RVizPluginDisplayStereoscopic::UpdateStereoscopicTopicsAndTransports()
     {
@@ -164,8 +164,8 @@ namespace rviz_plugin_display_stereoscopic
     }
     void RVizPluginDisplayStereoscopic::UpdateStereoscopicResultion()
     {
-        m_i_stereoscopic_view_width=m_prp_stereoscopic_view_width->getInt();
-        m_i_stereoscopic_view_height=m_prp_stereoscopic_view_height->getInt();
+        m_i_stereoscopic_view_res_x=m_prp_stereoscopic_view_res_x->getInt();
+        m_i_stereoscopic_view_res_y=m_prp_stereoscopic_view_res_y->getInt();
         CleanupStereoscopicTexture();
         InitStereoscopicTexture();
     }
@@ -183,12 +183,12 @@ namespace rviz_plugin_display_stereoscopic
     void RVizPluginDisplayStereoscopic::UpdateStereoscopicIntrinsics()
     {
         m_mat_camera_matrix=cv::Mat(3,3,cv::DataType<double>::type);
-        m_mat_camera_matrix.at<double>(0,0)=m_i_stereoscopic_view_width/2.0;
+        m_mat_camera_matrix.at<double>(0,0)=m_i_stereoscopic_view_res_x/2.0;
         m_mat_camera_matrix.at<double>(0,1)=0;
-        m_mat_camera_matrix.at<double>(0,2)=m_i_stereoscopic_view_width/2.0;
+        m_mat_camera_matrix.at<double>(0,2)=m_i_stereoscopic_view_res_x/2.0;
         m_mat_camera_matrix.at<double>(1,0)=0;
-        m_mat_camera_matrix.at<double>(1,1)=m_i_stereoscopic_view_height/2.0;
-        m_mat_camera_matrix.at<double>(1,2)=m_i_stereoscopic_view_height/2.0;
+        m_mat_camera_matrix.at<double>(1,1)=m_i_stereoscopic_view_res_y/2.0;
+        m_mat_camera_matrix.at<double>(1,2)=m_i_stereoscopic_view_res_y/2.0;
         m_mat_camera_matrix.at<double>(2,0)=0;
         m_mat_camera_matrix.at<double>(2,1)=0;
         m_mat_camera_matrix.at<double>(2,2)=1;
@@ -202,24 +202,24 @@ namespace rviz_plugin_display_stereoscopic
                                     m_mat_distortion_coefficients,
                                     cv::Mat(),
                                     m_mat_camera_matrix,
-                                    cv::Size(m_i_stereoscopic_view_width,m_i_stereoscopic_view_height),
+                                    cv::Size(m_i_stereoscopic_view_res_x,m_i_stereoscopic_view_res_y),
                                     CV_32FC1,
                                     m_mat_undistort_map_1,
                                     m_mat_undistort_map_2);
     }
     void RVizPluginDisplayStereoscopic::UpdateStereoscopicView()
     {
-        m_i_stereoscopic_view_width=m_ogr_render_texture_eye_left->getWidth();
-        m_i_stereoscopic_view_height=m_ogr_render_texture_eye_left->getHeight();
+        m_i_stereoscopic_view_res_x=m_ogr_render_texture_eye_left->getWidth();
+        m_i_stereoscopic_view_res_y=m_ogr_render_texture_eye_left->getHeight();
 
         Ogre::PixelFormat ogr_pf_pixel_format=Ogre::PF_BYTE_RGB;
         uint pixelsize=Ogre::PixelUtil::getNumElemBytes(ogr_pf_pixel_format);
-        uint uc_data_size=m_i_stereoscopic_view_width*m_i_stereoscopic_view_height*pixelsize;
+        uint uc_data_size=m_i_stereoscopic_view_res_x*m_i_stereoscopic_view_res_y*pixelsize;
 
         uchar* uc_data_eye_left=OGRE_ALLOC_T(uchar,static_cast<int>(uc_data_size),Ogre::MEMCATEGORY_RENDERSYS);
         uchar* uc_data_eye_right=OGRE_ALLOC_T(uchar,static_cast<int>(uc_data_size),Ogre::MEMCATEGORY_RENDERSYS);
-        Ogre::PixelBox ogr_pb_pixelbox_eye_left(m_i_stereoscopic_view_width,m_i_stereoscopic_view_height,1,ogr_pf_pixel_format,uc_data_eye_left);
-        Ogre::PixelBox ogr_pb_pixelbox_eye_right(m_i_stereoscopic_view_width,m_i_stereoscopic_view_height,1,ogr_pf_pixel_format,uc_data_eye_right);
+        Ogre::PixelBox ogr_pb_pixelbox_eye_left(m_i_stereoscopic_view_res_x,m_i_stereoscopic_view_res_y,1,ogr_pf_pixel_format,uc_data_eye_left);
+        Ogre::PixelBox ogr_pb_pixelbox_eye_right(m_i_stereoscopic_view_res_x,m_i_stereoscopic_view_res_y,1,ogr_pf_pixel_format,uc_data_eye_right);
 
         m_ogr_render_texture_eye_left->copyContentsToMemory(ogr_pb_pixelbox_eye_left,Ogre::RenderTarget::FB_AUTO);
         m_ogr_render_texture_eye_right->copyContentsToMemory(ogr_pb_pixelbox_eye_right,Ogre::RenderTarget::FB_AUTO);

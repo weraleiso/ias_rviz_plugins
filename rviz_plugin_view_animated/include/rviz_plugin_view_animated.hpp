@@ -85,12 +85,12 @@ namespace rviz_plugin_view_animated
         std::shared_ptr<image_transport::ImageTransport> m_hdl_it;
         rclcpp::Subscription<rviz_plugin_view_animated_msgs::msg::ViewTrajectory>::SharedPtr m_sub_vtr_view_trajectory;
         rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr m_sub_f32_view_pause;
-        rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_bol_view_transition_finished;
+        rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_bol_view_animation_finished;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pub_pst_view;
         image_transport::Publisher m_pub_img_view_live;
         std::vector<rviz_plugin_view_animated_msgs::msg::ViewMovement> m_vec_vmo_movements;
         sensor_msgs::msg::Image m_msg_img_view_live;
-        rclcpp::Time m_tim_view_transition_start;
+        rclcpp::Time m_tim_view_animation_start;
 
         // OpenCV properties
         cv::VideoWriter m_vwt_view_live;
@@ -117,7 +117,7 @@ namespace rviz_plugin_view_animated
         std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_vector_up_lock_enabled;
         std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_pose_publish_enabled;
         std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_mouse_enabled;
-        std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_transition_enabled;
+        std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_animation_enabled;
         std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_live_publish_enabled;
         std::unique_ptr<rviz_common::properties::BoolProperty> m_prp_view_live_record_enabled;
         std::unique_ptr<rviz_common::properties::StringProperty> m_prp_view_live_record_path;
@@ -126,8 +126,8 @@ namespace rviz_plugin_view_animated
         std::unique_ptr<rviz_common::properties::ColorProperty> m_prp_view_live_color;
         std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_live_topic;
         std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_pose_topic;
-        std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_movement_completed_topic;
-        std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_movement_pause_topic;
+        std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_animation_completed_topic;
+        std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_animation_pause_topic;
         std::unique_ptr<rviz_common::properties::RosTopicProperty> m_prp_view_trajectory_topic;
         std::unique_ptr<rviz_rendering::Shape> m_shp_focal;
 
@@ -184,7 +184,7 @@ namespace rviz_plugin_view_animated
         void cb_prp_update_view_live_color();
         void cb_prp_update_view_placement_topic();
         void cb_prp_update_view_trajectory_topic();
-        void cb_prp_update_view_transition_pause_topic();
+        void cb_prp_update_view_animation_pause_topic();
         void cb_prp_update_view_movement_completed_topic();
         void cb_prp_update_view_pose_topic();
         void cb_prp_update_view_live_topic();
@@ -198,7 +198,7 @@ namespace rviz_plugin_view_animated
         void UpdateViewInitialize();
         void UpdateViewCancel();
         float GetViewEyeFocusDistance();
-        float CalculateViewTransitionIteration(float d_time_delta,uint8_t ui8_movement_mode);
+        float CalculateViewAnimationIteration(float d_time_delta,uint8_t ui8_movement_mode);
         void OrbitViewTo(const Ogre::Vector3& ov3_view_eye);
         void MoveEyeWithFocusTo(const Ogre::Vector3& ov3_view_eye_focus);
         Ogre::Vector3 FixedFrameToAttachedLocal(const Ogre::Vector3& ov3_vector);
@@ -206,12 +206,11 @@ namespace rviz_plugin_view_animated
         void TransformViewTrajectoryToFixedTFFrame(geometry_msgs::msg::PointStamped& msg_pos_eye,
                                           geometry_msgs::msg::PointStamped& msg_pos_focus,
                                           geometry_msgs::msg::Vector3Stamped& msg_v3s_up,bool b_is_fps=false);
-        Ogre::Quaternion getQuaternionFromDirection(const Ogre::Vector3& direction,const Ogre::Vector3& upHint);
-        Ogre::Vector3 getVector3FromQuaternion(Ogre::Quaternion oqu_input);
+        Ogre::Quaternion getQuaternionFromDirection(const Ogre::Vector3& ov3_direction,const Ogre::Vector3& ov3_up_vector);
         void InitializeViewLiveTexture();
         void UpdateViewLiveImageResolution();
         void PublishViewPose();
-        void PublishViewMovementCompleted();
+        void PublishViewAnimationCompleted();
         void PublishViewLiveImage();
 
 

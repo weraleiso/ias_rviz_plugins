@@ -36,7 +36,7 @@ namespace rviz_plugin_view_animated
         m_prp_view_speed_profile->addOptionStd("FULL");
         m_prp_view_speed_profile->addOptionStd("QUADRATIC");
         m_prp_view_speed_profile->addOptionStd("EXPONENTIAL");
-        m_prp_view_duration=std::make_unique<rviz_common::properties::FloatProperty>("Transition Time",3.0,"Transition Time.",this);
+        m_prp_view_duration=std::make_unique<rviz_common::properties::FloatProperty>("Duration",3.0,"Duration.",this);
         m_prp_view_duration->setMin(0.1);
         m_prp_view_progress=std::make_unique<rviz_common::properties::FloatProperty>("Progress",0.0,"Progress.",this);
         m_prp_view_progress->setReadOnly(true);
@@ -55,24 +55,24 @@ namespace rviz_plugin_view_animated
         m_prp_view_distance->setMin(0.1);
         m_prp_view_distance->setReadOnly(true);
         m_prp_view_frame_by_frame_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Frame By Frame Enabled",false,"Frame By Frame Enabled.",this);
-        m_prp_view_vector_up_lock_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Up Axis Lock Enabled",true,"Up Axis Lock Enabled.",this,SLOT(cb_prp_update_view_up_lock_enabled()));
+        m_prp_view_vector_up_lock_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Up Vector Lock Enabled",true,"Up Vector Lock Enabled.",this,SLOT(cb_prp_update_view_up_lock_enabled()));
         m_prp_view_pose_publish_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Pose Publish Enabled",false,"Pose Publish Enabled.",this);
         m_prp_view_mouse_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Mouse Control Enabled",true,"Mouse Control Enabled.",this);
-        m_prp_view_transition_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Transition Enabled",false,"Transition Enabled.",this);
+        m_prp_view_animation_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Animation Enabled",false,"Animation Enabled.",this);
         m_prp_view_live_publish_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Live Publish Enabled",false,"Live Publish Enabled.",this,SLOT(cb_prp_update_view_live_enable()));
         m_prp_view_live_record_enabled=std::make_unique<rviz_common::properties::BoolProperty>("Live Record Enabled",false,"Live Record Enabled.",this,SLOT(cb_prp_update_view_live_record_enable()));
         m_prp_view_live_record_path=std::make_unique<rviz_common::properties::StringProperty>("Live Record Path","/home/ias/Videos/","Live Record Path.",this);
-        m_prp_view_live_width=std::make_unique<rviz_common::properties::IntProperty>("Live Width",1280,"Live Width.",this);
-        m_prp_view_live_height=std::make_unique<rviz_common::properties::IntProperty>("Live Height",720,"Live Height.",this);
+        m_prp_view_live_width=std::make_unique<rviz_common::properties::IntProperty>("Live Resolution X",1280,"Live Resolution X.",this);
+        m_prp_view_live_height=std::make_unique<rviz_common::properties::IntProperty>("Live Resolution Y",720,"Live Resolution Y.",this);
         m_prp_view_live_color=std::make_unique<rviz_common::properties::ColorProperty>("Live Background Color",QColor(48,48,48),"Live Background Color.",this,SLOT(cb_prp_update_view_live_color()));
         m_prp_view_live_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Live Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"live"),"sensor_msgs/msg/Image","Live Topic.",this,SLOT(cb_prp_update_view_live_topic()));
         m_prp_view_live_topic->initialize(m_hdl_node_rviz);
         m_prp_view_pose_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Pose Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"pose"),"geometry_msgs/msg/PoseStamped","Pose Topic.",this,SLOT(cb_prp_update_view_pose_topic()));
         m_prp_view_pose_topic->initialize(m_hdl_node_rviz);
-        m_prp_view_movement_completed_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Transition Completed Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"completed"),"std_msgs/msg/Bool","Transition Completed Topic.",this,SLOT(cb_prp_update_view_movement_completed_topic()));
-        m_prp_view_movement_completed_topic->initialize(m_hdl_node_rviz);
-        m_prp_view_movement_pause_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Transition Pause Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"pause"),"std_msgs/msg/Float64","Transition Pause Topic.",this,SLOT(cb_prp_update_view_transition_pause_topic()));
-        m_prp_view_movement_pause_topic->initialize(m_hdl_node_rviz);
+        m_prp_view_animation_completed_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Completed Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"completed"),"std_msgs/msg/Bool","Completed Topic.",this,SLOT(cb_prp_update_view_movement_completed_topic()));
+        m_prp_view_animation_completed_topic->initialize(m_hdl_node_rviz);
+        m_prp_view_animation_pause_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Pause Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"pause"),"std_msgs/msg/Float64","Pause Topic.",this,SLOT(cb_prp_update_view_animation_pause_topic()));
+        m_prp_view_animation_pause_topic->initialize(m_hdl_node_rviz);
         m_prp_view_trajectory_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Trajectory Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"trajectory"),"rviz_plugin_view_animated_msgs/msg/ViewTrajectory","Trajectory Topic.",this,SLOT(cb_prp_update_view_trajectory_topic()));
         m_prp_view_trajectory_topic->initialize(m_hdl_node_rviz);
 
@@ -101,7 +101,7 @@ namespace rviz_plugin_view_animated
         m_prp_view_vector_up_lock_enabled->setBool(true);
         m_prp_view_pose_publish_enabled->setBool(false);
         m_prp_view_mouse_enabled->setBool(true);
-        m_prp_view_transition_enabled->setBool(false);
+        m_prp_view_animation_enabled->setBool(false);
         m_prp_view_live_publish_enabled->setBool(false);
         m_prp_view_live_record_enabled->setBool(false);
         m_prp_view_live_color->setColor(QColor(48,48,48));
@@ -121,12 +121,12 @@ namespace rviz_plugin_view_animated
         if(context_->getFrameManager()->getTransform(m_prp_view_tf_frame->getFrameStd(),m_ov3_tf_frame_position,m_oqu_tf_frame_orientation))
         {
             // Process movements, if still >=2 are available
-            if(m_prp_view_transition_enabled->getBool() && m_vec_vmo_movements.size()>=2)
+            if(m_prp_view_animation_enabled->getBool() && m_vec_vmo_movements.size()>=2)
             {
                 if(m_f_view_pause>0.0)
                 {
                     rclcpp::sleep_for(std::chrono::nanoseconds(long(m_f_view_pause*1000000000)));
-                    m_tim_view_transition_start+=rclcpp::Duration::from_seconds(m_f_view_pause);
+                    m_tim_view_animation_start+=rclcpp::Duration::from_seconds(m_f_view_pause);
                     m_f_view_pause=0.0;
                 }
 
@@ -160,7 +160,7 @@ namespace rviz_plugin_view_animated
                 }
                 else
                 {
-                    rclcpp::Duration dur_elapsed=m_hdl_node->get_clock()->now()-m_tim_view_transition_start;
+                    rclcpp::Duration dur_elapsed=m_hdl_node->get_clock()->now()-m_tim_view_animation_start;
                     f_view_movement_progress=dur_elapsed.seconds()/msg_vmo_goal.view_duration.data;
                 }
 
@@ -173,20 +173,20 @@ namespace rviz_plugin_view_animated
                 m_prp_view_progress->setValue(f_view_movement_progress*msg_vmo_goal.view_duration.data);
 
                 // Update camera pose based on calculated iterations
-                float f_view_transition_iteration=CalculateViewTransitionIteration(f_view_movement_progress,msg_vmo_goal.view_speed_profile);
+                float f_view_animation_iteration=CalculateViewAnimationIteration(f_view_movement_progress,msg_vmo_goal.view_speed_profile);
                 Ogre::Vector3 ov3_eye_new;
-                ov3_eye_new.x=msg_vmo_origin.view_eye.point.x+f_view_transition_iteration*(msg_vmo_goal.view_eye.point.x-msg_vmo_origin.view_eye.point.x);
-                ov3_eye_new.y=msg_vmo_origin.view_eye.point.y+f_view_transition_iteration*(msg_vmo_goal.view_eye.point.y-msg_vmo_origin.view_eye.point.y);
-                ov3_eye_new.z=msg_vmo_origin.view_eye.point.z+f_view_transition_iteration*(msg_vmo_goal.view_eye.point.z-msg_vmo_origin.view_eye.point.z);
+                ov3_eye_new.x=msg_vmo_origin.view_eye.point.x+f_view_animation_iteration*(msg_vmo_goal.view_eye.point.x-msg_vmo_origin.view_eye.point.x);
+                ov3_eye_new.y=msg_vmo_origin.view_eye.point.y+f_view_animation_iteration*(msg_vmo_goal.view_eye.point.y-msg_vmo_origin.view_eye.point.y);
+                ov3_eye_new.z=msg_vmo_origin.view_eye.point.z+f_view_animation_iteration*(msg_vmo_goal.view_eye.point.z-msg_vmo_origin.view_eye.point.z);
                 m_prp_view_eye->setVector(ov3_eye_new);
 
                 if(m_prp_view_mode->getStdString()=="ORBIT")
                 {
                     // In ORBIT mode derive view direction based on eye and fixed focus points!
                     Ogre::Vector3 ov3_focus_new;
-                    ov3_focus_new.x=msg_vmo_origin.view_focus.point.x+f_view_transition_iteration*(msg_vmo_goal.view_focus.point.x-msg_vmo_origin.view_focus.point.x);
-                    ov3_focus_new.y=msg_vmo_origin.view_focus.point.y+f_view_transition_iteration*(msg_vmo_goal.view_focus.point.y-msg_vmo_origin.view_focus.point.y);
-                    ov3_focus_new.z=msg_vmo_origin.view_focus.point.z+f_view_transition_iteration*(msg_vmo_goal.view_focus.point.z-msg_vmo_origin.view_focus.point.z);
+                    ov3_focus_new.x=msg_vmo_origin.view_focus.point.x+f_view_animation_iteration*(msg_vmo_goal.view_focus.point.x-msg_vmo_origin.view_focus.point.x);
+                    ov3_focus_new.y=msg_vmo_origin.view_focus.point.y+f_view_animation_iteration*(msg_vmo_goal.view_focus.point.y-msg_vmo_origin.view_focus.point.y);
+                    ov3_focus_new.z=msg_vmo_origin.view_focus.point.z+f_view_animation_iteration*(msg_vmo_goal.view_focus.point.z-msg_vmo_origin.view_focus.point.z);
                     m_prp_view_focus->setVector(ov3_focus_new);
                 }
                 else if(m_prp_view_mode->getStdString()=="FPS")
@@ -200,9 +200,9 @@ namespace rviz_plugin_view_animated
                 }
 
                 Ogre::Vector3 vc3_up_new;
-                vc3_up_new.x=msg_vmo_origin.view_up.vector.x+f_view_transition_iteration*(msg_vmo_goal.view_up.vector.x-msg_vmo_origin.view_up.vector.x);
-                vc3_up_new.y=msg_vmo_origin.view_up.vector.y+f_view_transition_iteration*(msg_vmo_goal.view_up.vector.y-msg_vmo_origin.view_up.vector.y);
-                vc3_up_new.z=msg_vmo_origin.view_up.vector.z+f_view_transition_iteration*(msg_vmo_goal.view_up.vector.z-msg_vmo_origin.view_up.vector.z);
+                vc3_up_new.x=msg_vmo_origin.view_up.vector.x+f_view_animation_iteration*(msg_vmo_goal.view_up.vector.x-msg_vmo_origin.view_up.vector.x);
+                vc3_up_new.y=msg_vmo_origin.view_up.vector.y+f_view_animation_iteration*(msg_vmo_goal.view_up.vector.y-msg_vmo_origin.view_up.vector.y);
+                vc3_up_new.z=msg_vmo_origin.view_up.vector.z+f_view_animation_iteration*(msg_vmo_goal.view_up.vector.z-msg_vmo_origin.view_up.vector.z);
                 m_prp_view_up->setVector(vc3_up_new);
 
                 UpdateViewPose();
@@ -213,7 +213,7 @@ namespace rviz_plugin_view_animated
                     m_vec_vmo_movements.erase(m_vec_vmo_movements.begin());
                     if(m_vec_vmo_movements.size()>=2)
                     {
-                        m_tim_view_transition_start+=rclcpp::Duration::from_seconds(msg_vmo_goal.view_duration.data);
+                        m_tim_view_animation_start+=rclcpp::Duration::from_seconds(msg_vmo_goal.view_duration.data);
                         m_f_frames_rendered=0.0;
                     }
                     else
@@ -480,8 +480,8 @@ namespace rviz_plugin_view_animated
                 m_vec_vmo_movements.push_back(msg_vmo_movement);
             }
 
-            m_tim_view_transition_start=m_hdl_node->get_clock()->now();
-            m_prp_view_transition_enabled->setBool(true);
+            m_tim_view_animation_start=m_hdl_node->get_clock()->now();
+            m_prp_view_animation_enabled->setBool(true);
         }
     }
     void RVizPluginViewAnimated::cb_sub_f32_view_pause(std_msgs::msg::Float32 msg_f32_pause)
@@ -596,18 +596,18 @@ namespace rviz_plugin_view_animated
                     1,
                     std::bind(&RVizPluginViewAnimated::cb_sub_vtr_view_trajectory,this,std::placeholders::_1));
     }
-    void RVizPluginViewAnimated::cb_prp_update_view_transition_pause_topic()
+    void RVizPluginViewAnimated::cb_prp_update_view_animation_pause_topic()
     {
         m_sub_f32_view_pause.reset();
         m_sub_f32_view_pause=m_hdl_node->create_subscription<std_msgs::msg::Float32>(
-                    m_prp_view_movement_pause_topic->getStdString(),
+                    m_prp_view_animation_pause_topic->getStdString(),
                     1,
                     std::bind(&RVizPluginViewAnimated::cb_sub_f32_view_pause,this,std::placeholders::_1));
     }
     void RVizPluginViewAnimated::cb_prp_update_view_movement_completed_topic()
     {
-        m_pub_bol_view_transition_finished.reset();
-        m_pub_bol_view_transition_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_movement_completed_topic->getStdString(),1);
+        m_pub_bol_view_animation_finished.reset();
+        m_pub_bol_view_animation_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_animation_completed_topic->getStdString(),1);
     }
     void RVizPluginViewAnimated::cb_prp_update_view_pose_topic()
     {
@@ -626,8 +626,8 @@ namespace rviz_plugin_view_animated
         // Update properties for subscriber/publisher topics
         m_prp_view_live_topic->setStdString(m_s_rviz_plugin_namespace+"live");
         m_prp_view_pose_topic->setStdString(m_s_rviz_plugin_namespace+"pose");
-        m_prp_view_movement_completed_topic->setStdString(m_s_rviz_plugin_namespace+"completed");
-        m_prp_view_movement_pause_topic->setStdString(m_s_rviz_plugin_namespace+"pause");
+        m_prp_view_animation_completed_topic->setStdString(m_s_rviz_plugin_namespace+"completed");
+        m_prp_view_animation_pause_topic->setStdString(m_s_rviz_plugin_namespace+"pause");
         m_prp_view_trajectory_topic->setStdString(m_s_rviz_plugin_namespace+"trajectory");
 
         // Initialize subscribers and publishers
@@ -636,10 +636,10 @@ namespace rviz_plugin_view_animated
                     1,
                     std::bind(&RVizPluginViewAnimated::cb_sub_vtr_view_trajectory,this,std::placeholders::_1));
         m_sub_f32_view_pause=m_hdl_node->create_subscription<std_msgs::msg::Float32>(
-                    m_prp_view_movement_pause_topic->getStdString(),
+                    m_prp_view_animation_pause_topic->getStdString(),
                     1,
                     std::bind(&RVizPluginViewAnimated::cb_sub_f32_view_pause,this,std::placeholders::_1));
-        m_pub_bol_view_transition_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_movement_completed_topic->getStdString(),1);
+        m_pub_bol_view_animation_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_animation_completed_topic->getStdString(),1);
         m_pub_pst_view=m_hdl_node->create_publisher<geometry_msgs::msg::PoseStamped>(m_prp_view_pose_topic->getStdString(),1);
         m_pub_img_view_live=image_transport::create_publisher(m_hdl_node.get(),m_prp_view_live_topic->getStdString());
     }
@@ -756,21 +756,21 @@ namespace rviz_plugin_view_animated
         msg_vmo_movement_empty.view_up.vector.z=m_prp_view_up->getVector().z;
         m_vec_vmo_movements.push_back(msg_vmo_movement_empty);
 
-        m_tim_view_transition_start=m_hdl_node->get_clock()->now();
-        m_prp_view_transition_enabled->setBool(true);
+        m_tim_view_animation_start=m_hdl_node->get_clock()->now();
+        m_prp_view_animation_enabled->setBool(true);
     }
     void RVizPluginViewAnimated::UpdateViewCancel()
     {
-        if(m_prp_view_transition_enabled->getBool()==true)
+        if(m_prp_view_animation_enabled->getBool()==true)
         {
             m_vec_vmo_movements.clear();
             m_f_frames_rendered=0.0;
-            m_prp_view_transition_enabled->setBool(false);
+            m_prp_view_animation_enabled->setBool(false);
             m_prp_view_frame_by_frame_enabled->setBool(false);
-            PublishViewMovementCompleted();
+            PublishViewAnimationCompleted();
         }
     }
-    float RVizPluginViewAnimated::CalculateViewTransitionIteration(float f_time_delta,uint8_t ui8_movement_mode)
+    float RVizPluginViewAnimated::CalculateViewAnimationIteration(float f_time_delta,uint8_t ui8_movement_mode)
     {
         // View movement speed profiles:
         // 0 (RISING) ... Increase speed through view trajectory.
@@ -909,20 +909,14 @@ namespace rviz_plugin_view_animated
         msg_pns_focus.header.frame_id=m_prp_view_tf_frame->getStdString();
         msg_v3s_up.header.frame_id=m_prp_view_tf_frame->getStdString();
     }
-    Ogre::Quaternion RVizPluginViewAnimated::getQuaternionFromDirection(const Ogre::Vector3& direction,const Ogre::Vector3& upHint)
+    Ogre::Quaternion RVizPluginViewAnimated::getQuaternionFromDirection(const Ogre::Vector3& ov3_direction,const Ogre::Vector3& ov3_up_vector)
     {
-        Ogre::Vector3 forward=direction.normalisedCopy();
-        Ogre::Vector3 right=upHint.crossProduct(forward).normalisedCopy();
-        Ogre::Vector3 up=forward.crossProduct(right);
-        Ogre::Matrix3 rot;
-        rot.FromAxes(right,up,forward);
-        return Ogre::Quaternion(rot);
-    }
-    Ogre::Vector3 RVizPluginViewAnimated::getVector3FromQuaternion(Ogre::Quaternion oqu_input)
-    {
-        tf2::Vector3 vc3_forward(1.0,0.0,0.0);
-        tf2::Vector3 vc3_output=tf2::quatRotate(tf2::Quaternion(oqu_input.x,oqu_input.y,oqu_input.z,oqu_input.w),vc3_forward);
-        return Ogre::Vector3(vc3_output.getX(),vc3_output.getY(),vc3_output.getZ());
+        Ogre::Vector3 ov3_forward_vector=ov3_direction.normalisedCopy();
+        Ogre::Vector3 ov3_right_vector=ov3_up_vector.crossProduct(ov3_forward_vector).normalisedCopy();
+        Ogre::Vector3 ov3_up_vector_new=ov3_forward_vector.crossProduct(ov3_right_vector);
+        Ogre::Matrix3 om3_orientation;
+        om3_orientation.FromAxes(ov3_right_vector,ov3_up_vector_new,ov3_forward_vector);
+        return Ogre::Quaternion(om3_orientation);
     }
     void RVizPluginViewAnimated::InitializeViewLiveTexture()
     {
@@ -972,11 +966,11 @@ namespace rviz_plugin_view_animated
             m_pub_pst_view->publish(msg_pst_camera);
         }
     }
-    void RVizPluginViewAnimated::PublishViewMovementCompleted()
+    void RVizPluginViewAnimated::PublishViewAnimationCompleted()
     {
-        std_msgs::msg::Bool msg_bol_transition_finished;
-        msg_bol_transition_finished.data=1;
-        m_pub_bol_view_transition_finished->publish(msg_bol_transition_finished);
+        std_msgs::msg::Bool msg_bol_animation_finished;
+        msg_bol_animation_finished.data=1;
+        m_pub_bol_view_animation_finished->publish(msg_bol_animation_finished);
     }
     void RVizPluginViewAnimated::PublishViewLiveImage()
     {
