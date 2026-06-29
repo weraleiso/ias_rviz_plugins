@@ -12,10 +12,13 @@
 #include<geometry_msgs/msg/pose.hpp>
 #include<geometry_msgs/msg/point_stamped.hpp>
 #include<geometry_msgs/msg/vector3_stamped.hpp>
+#include<geometry_msgs/msg/transform_stamped.hpp>
 #include<sensor_msgs/msg/image.hpp>
+#include<sensor_msgs/msg/compressed_image.hpp>
 #include<sensor_msgs/image_encodings.hpp>
 #include<rviz_plugin_view_animated_msgs/msg/view_movement.hpp>
 #include<rviz_plugin_view_animated_msgs/msg/view_trajectory.hpp>
+#include<tf2_ros/transform_broadcaster.h>
 
 // OpenCV libraries
 #include<opencv2/highgui.hpp>
@@ -82,14 +85,16 @@ namespace rviz_plugin_view_animated
         // ROS2 properties
         rclcpp::Node::SharedPtr m_hdl_node;
         std::shared_ptr<rviz_common::ros_integration::RosNodeAbstractionIface> m_hdl_node_rviz;
-        std::shared_ptr<image_transport::ImageTransport> m_hdl_it;
         rclcpp::Subscription<rviz_plugin_view_animated_msgs::msg::ViewTrajectory>::SharedPtr m_sub_vtr_view_trajectory;
         rclcpp::Subscription<std_msgs::msg::Float32>::SharedPtr m_sub_f32_view_pause;
         rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr m_pub_bol_view_animation_finished;
         rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr m_pub_pst_view;
-        image_transport::Publisher m_pub_img_view_live;
+        rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr m_pub_img_view_live;
+        std::unique_ptr<tf2_ros::TransformBroadcaster> tf2_broadcaster;
+        geometry_msgs::msg::TransformStamped m_tfs_transform;
+        geometry_msgs::msg::PoseStamped m_msg_pst_camera;
         std::vector<rviz_plugin_view_animated_msgs::msg::ViewMovement> m_vec_vmo_movements;
-        sensor_msgs::msg::Image m_msg_img_view_live;
+        sensor_msgs::msg::CompressedImage m_msg_img_view_live;
         rclcpp::Time m_tim_view_animation_start;
 
         // OpenCV properties
@@ -141,6 +146,7 @@ namespace rviz_plugin_view_animated
 
         // Helper properties
         QCursor m_qcu_mouse_control_disabled;
+        std::vector<int> m_vec_view_live_image_params={cv::IMWRITE_JPEG_QUALITY,50};
         std::vector<uint8_t> m_ui8_buffer;
         std::string m_s_rviz_plugin_namespace;
         float m_f_view_pause;
@@ -182,12 +188,11 @@ namespace rviz_plugin_view_animated
         void cb_prp_update_view_live_enable();
         void cb_prp_update_view_live_record_enable();
         void cb_prp_update_view_live_color();
-        void cb_prp_update_view_placement_topic();
-        void cb_prp_update_view_trajectory_topic();
-        void cb_prp_update_view_animation_pause_topic();
-        void cb_prp_update_view_movement_completed_topic();
-        void cb_prp_update_view_pose_topic();
         void cb_prp_update_view_live_topic();
+        void cb_prp_update_view_pose_topic();
+        void cb_prp_update_view_animation_completed_topic();
+        void cb_prp_update_view_animation_pause_topic();
+        void cb_prp_update_view_trajectory_topic();
 
         // Helper methods
         void UpdateViewTopicsAndTransports();
@@ -197,7 +202,6 @@ namespace rviz_plugin_view_animated
         void UpdateViewEyeFocus(float f_x,float f_y,float f_z);
         void UpdateViewInitialize();
         void UpdateViewCancel();
-        float GetViewEyeFocusDistance();
         float CalculateViewAnimationIteration(float d_time_delta,uint8_t ui8_movement_mode);
         void OrbitViewTo(const Ogre::Vector3& ov3_view_eye);
         void MoveEyeWithFocusTo(const Ogre::Vector3& ov3_view_eye_focus);

@@ -65,11 +65,11 @@ namespace rviz_plugin_view_animated
         m_prp_view_live_width=std::make_unique<rviz_common::properties::IntProperty>("Live Resolution X",1280,"Live Resolution X.",this);
         m_prp_view_live_height=std::make_unique<rviz_common::properties::IntProperty>("Live Resolution Y",720,"Live Resolution Y.",this);
         m_prp_view_live_color=std::make_unique<rviz_common::properties::ColorProperty>("Live Background Color",QColor(48,48,48),"Live Background Color.",this,SLOT(cb_prp_update_view_live_color()));
-        m_prp_view_live_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Live Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"live"),"sensor_msgs/msg/Image","Live Topic.",this,SLOT(cb_prp_update_view_live_topic()));
+        m_prp_view_live_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Live Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"live/compressed"),"sensor_msgs/msg/CompressedImage","Live Topic.",this,SLOT(cb_prp_update_view_live_topic()));
         m_prp_view_live_topic->initialize(m_hdl_node_rviz);
         m_prp_view_pose_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Pose Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"pose"),"geometry_msgs/msg/PoseStamped","Pose Topic.",this,SLOT(cb_prp_update_view_pose_topic()));
         m_prp_view_pose_topic->initialize(m_hdl_node_rviz);
-        m_prp_view_animation_completed_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Completed Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"completed"),"std_msgs/msg/Bool","Completed Topic.",this,SLOT(cb_prp_update_view_movement_completed_topic()));
+        m_prp_view_animation_completed_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Completed Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"completed"),"std_msgs/msg/Bool","Completed Topic.",this,SLOT(cb_prp_update_view_animation_completed_topic()));
         m_prp_view_animation_completed_topic->initialize(m_hdl_node_rviz);
         m_prp_view_animation_pause_topic=std::make_unique<rviz_common::properties::RosTopicProperty>("Pause Topic",QString::fromStdString(m_s_rviz_plugin_namespace+"pause"),"std_msgs/msg/Float64","Pause Topic.",this,SLOT(cb_prp_update_view_animation_pause_topic()));
         m_prp_view_animation_pause_topic->initialize(m_hdl_node_rviz);
@@ -588,13 +588,20 @@ namespace rviz_plugin_view_animated
     {
         m_p_ret_view_live->getViewport(0)->setBackgroundColour(m_prp_view_live_color->getOgreColor());
     }
-    void RVizPluginViewAnimated::cb_prp_update_view_trajectory_topic()
+    void RVizPluginViewAnimated::cb_prp_update_view_live_topic()
     {
-        m_sub_vtr_view_trajectory.reset();
-        m_sub_vtr_view_trajectory=m_hdl_node->create_subscription<rviz_plugin_view_animated_msgs::msg::ViewTrajectory>(
-                    m_prp_view_trajectory_topic->getStdString(),
-                    1,
-                    std::bind(&RVizPluginViewAnimated::cb_sub_vtr_view_trajectory,this,std::placeholders::_1));
+        m_pub_img_view_live.reset();
+        m_pub_img_view_live=m_hdl_node->create_publisher<sensor_msgs::msg::CompressedImage>(m_prp_view_live_topic->getStdString(),1);
+    }
+    void RVizPluginViewAnimated::cb_prp_update_view_pose_topic()
+    {
+        m_pub_pst_view.reset();
+        m_pub_pst_view=m_hdl_node->create_publisher<geometry_msgs::msg::PoseStamped>(m_prp_view_pose_topic->getStdString(),1);
+    }
+    void RVizPluginViewAnimated::cb_prp_update_view_animation_completed_topic()
+    {
+        m_pub_bol_view_animation_finished.reset();
+        m_pub_bol_view_animation_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_animation_completed_topic->getStdString(),1);
     }
     void RVizPluginViewAnimated::cb_prp_update_view_animation_pause_topic()
     {
@@ -604,33 +611,31 @@ namespace rviz_plugin_view_animated
                     1,
                     std::bind(&RVizPluginViewAnimated::cb_sub_f32_view_pause,this,std::placeholders::_1));
     }
-    void RVizPluginViewAnimated::cb_prp_update_view_movement_completed_topic()
+    void RVizPluginViewAnimated::cb_prp_update_view_trajectory_topic()
     {
-        m_pub_bol_view_animation_finished.reset();
-        m_pub_bol_view_animation_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_animation_completed_topic->getStdString(),1);
-    }
-    void RVizPluginViewAnimated::cb_prp_update_view_pose_topic()
-    {
-        m_pub_pst_view.reset();
-        m_pub_pst_view=m_hdl_node->create_publisher<geometry_msgs::msg::PoseStamped>(m_prp_view_pose_topic->getStdString(),1);
-    }
-    void RVizPluginViewAnimated::cb_prp_update_view_live_topic()
-    {
-        m_pub_img_view_live.shutdown();
-        m_pub_img_view_live=image_transport::create_publisher(m_hdl_node.get(),m_prp_view_live_topic->getStdString());
+        m_sub_vtr_view_trajectory.reset();
+        m_sub_vtr_view_trajectory=m_hdl_node->create_subscription<rviz_plugin_view_animated_msgs::msg::ViewTrajectory>(
+                    m_prp_view_trajectory_topic->getStdString(),
+                    1,
+                    std::bind(&RVizPluginViewAnimated::cb_sub_vtr_view_trajectory,this,std::placeholders::_1));
     }
 
     // Helper methods
     void RVizPluginViewAnimated::UpdateViewTopicsAndTransports()
     {
         // Update properties for subscriber/publisher topics
-        m_prp_view_live_topic->setStdString(m_s_rviz_plugin_namespace+"live");
+        m_prp_view_live_topic->setStdString(m_s_rviz_plugin_namespace+"live/compressed");
         m_prp_view_pose_topic->setStdString(m_s_rviz_plugin_namespace+"pose");
         m_prp_view_animation_completed_topic->setStdString(m_s_rviz_plugin_namespace+"completed");
         m_prp_view_animation_pause_topic->setStdString(m_s_rviz_plugin_namespace+"pause");
         m_prp_view_trajectory_topic->setStdString(m_s_rviz_plugin_namespace+"trajectory");
 
         // Initialize subscribers and publishers
+        m_sub_vtr_view_trajectory.reset();
+        m_sub_f32_view_pause.reset();
+        m_pub_bol_view_animation_finished.reset();
+        m_pub_pst_view.reset();
+        m_pub_img_view_live.reset();
         m_sub_vtr_view_trajectory=m_hdl_node->create_subscription<rviz_plugin_view_animated_msgs::msg::ViewTrajectory>(
                     m_prp_view_trajectory_topic->getStdString(),
                     1,
@@ -641,7 +646,8 @@ namespace rviz_plugin_view_animated
                     std::bind(&RVizPluginViewAnimated::cb_sub_f32_view_pause,this,std::placeholders::_1));
         m_pub_bol_view_animation_finished=m_hdl_node->create_publisher<std_msgs::msg::Bool>(m_prp_view_animation_completed_topic->getStdString(),1);
         m_pub_pst_view=m_hdl_node->create_publisher<geometry_msgs::msg::PoseStamped>(m_prp_view_pose_topic->getStdString(),1);
-        m_pub_img_view_live=image_transport::create_publisher(m_hdl_node.get(),m_prp_view_live_topic->getStdString());
+        m_pub_img_view_live=m_hdl_node->create_publisher<sensor_msgs::msg::CompressedImage>(m_prp_view_live_topic->getStdString(),1);
+        tf2_broadcaster=std::make_unique<tf2_ros::TransformBroadcaster>(m_hdl_node);
     }
     void RVizPluginViewAnimated::UpdateViewPose()
     {
@@ -943,27 +949,34 @@ namespace rviz_plugin_view_animated
     {
         if(m_prp_view_pose_publish_enabled->getBool())
         {
-            geometry_msgs::msg::PoseStamped msg_pst_camera;
-            msg_pst_camera.header.frame_id=m_prp_view_tf_frame->getFrameStd();
-            msg_pst_camera.header.stamp=m_hdl_node->get_clock()->now();
-            msg_pst_camera.pose.position.x=camera_->getPosition().x;
-            msg_pst_camera.pose.position.y=camera_->getPosition().y;
-            msg_pst_camera.pose.position.z=camera_->getPosition().z;
-            msg_pst_camera.pose.orientation.w=camera_->getOrientation().w;
-            msg_pst_camera.pose.orientation.x=camera_->getOrientation().x;
-            msg_pst_camera.pose.orientation.y=camera_->getOrientation().y;
-            msg_pst_camera.pose.orientation.z=camera_->getOrientation().z;
-            // Transform into OpenCV frame (Z-axis pointing forward!)
-            tf2::Quaternion qua_rot_origin=tf2::Quaternion(msg_pst_camera.pose.orientation.x,msg_pst_camera.pose.orientation.y,msg_pst_camera.pose.orientation.z,msg_pst_camera.pose.orientation.w);
-            tf2::Quaternion qua_rot_roll;
-            qua_rot_roll.setEuler(0.0,0.0,3.14159);
-            tf2::Quaternion qua_rot_result=qua_rot_origin*qua_rot_roll;
+            // Publish pose message and TF2 stamped transform message
+            m_msg_pst_camera.header.frame_id=context_->getFixedFrame().toStdString();
+            m_msg_pst_camera.header.stamp=m_hdl_node->get_clock()->now();
+            m_msg_pst_camera.pose.position.x=camera_->getPosition().x;
+            m_msg_pst_camera.pose.position.y=camera_->getPosition().y;
+            m_msg_pst_camera.pose.position.z=camera_->getPosition().z;
+            tf2::Quaternion qua_rot_origin=tf2::Quaternion(camera_->getOrientation().x,camera_->getOrientation().y,camera_->getOrientation().z,camera_->getOrientation().w);
+            tf2::Quaternion qua_rotation;
+            qua_rotation.setRPY(0.0,1.570796327,1.570796327); // Rotate from OGRE camera frame into conventional x-forward frame
+            tf2::Quaternion qua_rot_result=qua_rot_origin*qua_rotation;
             qua_rot_result.normalize();
-            msg_pst_camera.pose.orientation.w=qua_rot_result.getW();
-            msg_pst_camera.pose.orientation.x=qua_rot_result.getX();
-            msg_pst_camera.pose.orientation.y=qua_rot_result.getY();
-            msg_pst_camera.pose.orientation.z=qua_rot_result.getZ();
-            m_pub_pst_view->publish(msg_pst_camera);
+            m_msg_pst_camera.pose.orientation.w=qua_rot_result.getW();
+            m_msg_pst_camera.pose.orientation.x=qua_rot_result.getX();
+            m_msg_pst_camera.pose.orientation.y=qua_rot_result.getY();
+            m_msg_pst_camera.pose.orientation.z=qua_rot_result.getZ();
+            m_pub_pst_view->publish(m_msg_pst_camera);
+
+            m_tfs_transform.header.stamp=m_hdl_node->get_clock()->now();
+            m_tfs_transform.header.frame_id=context_->getFixedFrame().toStdString();
+            m_tfs_transform.child_frame_id="animated_"+std::to_string(si_resource_name_count);
+            m_tfs_transform.transform.translation.x=camera_->getPosition().x;
+            m_tfs_transform.transform.translation.y=camera_->getPosition().y;
+            m_tfs_transform.transform.translation.z=camera_->getPosition().z;
+            m_tfs_transform.transform.rotation.w=qua_rot_result.getW();
+            m_tfs_transform.transform.rotation.x=qua_rot_result.getX();
+            m_tfs_transform.transform.rotation.y=qua_rot_result.getY();
+            m_tfs_transform.transform.rotation.z=qua_rot_result.getZ();
+            tf2_broadcaster->sendTransform(m_tfs_transform);
         }
     }
     void RVizPluginViewAnimated::PublishViewAnimationCompleted()
@@ -986,24 +999,18 @@ namespace rviz_plugin_view_animated
             QImage qim_view_live(m_ui8_buffer.data(),i_img_width,i_img_height,i_img_width*3,QImage::Format_BGR888);
 
             // If enabled, record MJPEG video file:
+            cv::Mat mat_view_live_frame(qim_view_live.height(),qim_view_live.width(),CV_8UC3,const_cast<uchar*>(qim_view_live.bits()),qim_view_live.bytesPerLine());
             if(m_prp_view_live_record_enabled->getBool()==true)
             {
-                cv::Mat mat_view_live_frame(qim_view_live.height(),qim_view_live.width(),CV_8UC3,const_cast<uchar*>(qim_view_live.bits()),qim_view_live.bytesPerLine());
                 m_vwt_view_live.write(mat_view_live_frame);
             }
 
             m_msg_img_view_live.header.frame_id=m_prp_view_tf_frame->getStdString();
             m_msg_img_view_live.header.stamp=m_hdl_node->get_clock()->now();
-            m_msg_img_view_live.height=qim_view_live.height();
-            m_msg_img_view_live.width=qim_view_live.width();
-            m_msg_img_view_live.encoding=sensor_msgs::image_encodings::BGR8;
-            m_msg_img_view_live.is_bigendian=false;
-            m_msg_img_view_live.step=static_cast<sensor_msgs::msg::Image::_step_type>(qim_view_live.bytesPerLine());
-            m_msg_img_view_live.data.resize(qim_view_live.sizeInBytes());
+            m_msg_img_view_live.format="jpeg";
+            cv::imencode(".jpg",mat_view_live_frame,m_msg_img_view_live.data,m_vec_view_live_image_params);
 
-            std::memcpy(m_msg_img_view_live.data.data(),qim_view_live.bits(),qim_view_live.sizeInBytes());
-
-            m_pub_img_view_live.publish(m_msg_img_view_live);
+            m_pub_img_view_live->publish(m_msg_img_view_live);
         }
     }
 

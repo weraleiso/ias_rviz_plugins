@@ -11,7 +11,7 @@ This plugin extends RViz with different light sources and shadow mapping.
 ![Image not available!](rviz_plugin_display_lighting.png?raw=true "rviz_plugin_display_lighting")
 
 The plugin is an extended version of the classic [**rviz_lighting**](https://github.com/mogumbo/rviz_lighting) ROS1 plugin, authored and/or maintained by Terence Welsh.
-**Known issues**: Please note that shadow mapping is currently not supported, potentially due to an [**issue with the ogre_vendor library**](https://github.com/gazebosim/gazebo-classic/issues/2700). Please keep in mind, that this repository contains open source and untested software, provided "as is". It is work in progress as part of the InterActiveSpace (IAS).
+**Known issues**: Please note that shadow mapping is currently not supported, potentially due to an [**issue with the ogre_vendor library**](https://github.com/gazebosim/gazebo-classic/issues/2700).
 
 ### 1.1 Basic use of the plugin
 After adding the plugin, the default light of RViz gets disabled and the plugin takes control of the "Ambient light".
@@ -171,7 +171,7 @@ The following properties are currently used by the plugin:
 - **Eye (Fixed)** ... The eye point as XYZ-Vector, given in the fixed TF Frame.
 - **Focus (Fixed)** ... The focus point (ORBIT) or focus vector (FPS) as XYZ-Vector, given in the fixed TF Frame.
 - **Up (Fixed)** ... The up vector as XYZ-Vector, given in the fixed TF Frame.
-- **Direction** ... The view direction as XYZ-Vector.
+- **Direction** ... The view direction as XYZ-Vector, given in the fixed TF Frame.
 - **Orientation** ... The view orientation as Quaternion, given in the fixed TF Frame.
 - **Distance** ... The view distance in ORBIT mode, measured from the eye to the focus point.
 - **Frame By Frame Enabled** ... Enables or disables frame-by-frame rendering.
@@ -185,7 +185,7 @@ The following properties are currently used by the plugin:
 - **Live Resolution X** ... The image resolution in X (width) of the live view.
 - **Live Resolution Y** ... The image resolution in Y (height) of the live view.
 - **Live Background Color** ... The background color of the published or recorded live view.
-- **Live Topic** ... The topic to publish the live view images.
+- **Live Topic** ... The topic to publish the live view images. Please note that the image is directly published as sensor_msgs::msg::CompressedImage message.
 - **Pose Topic** ... The topic to publish the current camera view pose, given in the fixed frame.
 - **Completed Topic** ... The topic to publish completed messages, once the movement trajectory has finished.
 - **Pause Topic** ... The topic to subscribe to pause messages.
