@@ -30,17 +30,6 @@
 
 // OGRE libraries
 #include<Ogre.h>
-#include<OgreEntity.h>
-#include<OgreCamera.h>
-#include<OgreFrustum.h>
-#include<OgreSceneManager.h>
-#include<OgreSceneNode.h>
-#include<OgreVector3.h>
-#include<OgreQuaternion.h>
-#include<OgreParticleSystem.h>
-#include<OgreParticle.h>
-#include<OgreParticleEmitter.h>
-#include<OgreParticleAffector.h>
 
 // STANDARD libraries
 #include<boost/random.hpp>
@@ -49,8 +38,6 @@
 
 namespace rviz_plugin_display_particles
 {
-    static int si_resource_name_count=0; // Make resource names unique
-
     class RVizPluginDisplayParticles:public rviz_common::Display
     {
         Q_OBJECT
@@ -90,6 +77,7 @@ namespace rviz_plugin_display_particles
         Ogre::Quaternion m_oqu_tf_frame_orientation;
 
         // Helper properties
+        static int si_resource_name_count; // Make resource names unique
         std::string m_s_rviz_plugin_namespace;
 
 

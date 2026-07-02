@@ -51,20 +51,6 @@
 
 // OGRE libraries
 #include<Ogre.h>
-#include<OgreRoot.h>
-#include<OgreSceneManager.h>
-#include<OgreSceneNode.h>
-#include<OgreEntity.h>
-#include<OgreFrustum.h>
-#include<OgreMaterialManager.h>
-#include<OgreMovableObject.h>
-#include<OgreManualObject.h>
-#include<OgreRenderQueueListener.h>
-#include<OgreRenderSystem.h>
-#include<OgreRenderTargetListener.h>
-#include<OgreRenderWindow.h>
-#include<OgreHardwarePixelBuffer.h>
-#include<OgrePixelFormat.h>
 
 // STANDARD libraries
 #include<iostream>
@@ -76,8 +62,6 @@
 
 namespace rviz_plugin_view_animated
 {
-    static uint32_t si_resource_name_count; // Make resource names unique
-
     class RVizPluginViewAnimated:public rviz_common::ViewController
     {
         Q_OBJECT
@@ -145,6 +129,7 @@ namespace rviz_plugin_view_animated
         Ogre::Quaternion m_oqu_tf_frame_orientation;
 
         // Helper properties
+        static int si_resource_name_count; // Make resource names unique
         QCursor m_qcu_mouse_control_disabled;
         std::vector<int> m_vec_view_live_image_params={cv::IMWRITE_JPEG_QUALITY,50};
         std::vector<uint8_t> m_ui8_buffer;

@@ -558,6 +558,9 @@ namespace rviz_plugin_display_lighting
         return Ogre::Vector3(vc3_output.getX(),vc3_output.getY(),vc3_output.getZ());
     }
 
+    // Initialize static properties
+    int RVizPluginDisplayLighting::si_resource_name_count;
+
     // Default constructor and destructor
     RVizPluginDisplayLighting::RVizPluginDisplayLighting()
     {

@@ -356,6 +356,9 @@ namespace rviz_plugin_display_projector
         m_tus_texture_unit_state->setColourOperation(Ogre::LBO_REPLACE);
     }
 
+    // Initialize static properties
+    int RVizPluginDisplayProjector::si_resource_name_count;
+
     // Default constructor and destructor
     RVizPluginDisplayProjector::RVizPluginDisplayProjector()
     {

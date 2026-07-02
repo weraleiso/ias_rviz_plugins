@@ -34,19 +34,6 @@
 
 // OGRE libraries
 #include<Ogre.h>
-#include<OgreRoot.h>
-#include<OgreSceneManager.h>
-#include<OgreSceneNode.h>
-#include<OgreEntity.h>
-#include<OgreFrustum.h>
-#include<OgreMaterialManager.h>
-#include<OgreMovableObject.h>
-#include<OgreManualObject.h>
-#include<OgreRenderQueueListener.h>
-#include<OgreRenderSystem.h>
-#include<OgreRenderTargetListener.h>
-#include<OgreRenderWindow.h>
-#include<OgreHardwarePixelBuffer.h>
 
 // STANDARD libraries
 #include<chrono>
@@ -57,8 +44,6 @@
 
 namespace rviz_plugin_display_projector
 {
-    static int si_resource_name_count=0; // Make resource names unique
-
     class RVizPluginDisplayProjector:public rviz_common::Display
     {
         Q_OBJECT
@@ -107,6 +92,7 @@ namespace rviz_plugin_display_projector
         Ogre::Quaternion m_oqu_orientation;
 
         // Helper properties
+        static int si_resource_name_count; // Make resource names unique
         std::string m_s_rviz_plugin_namespace;
         int m_i_projector_res_x;
         int m_i_projector_res_y;

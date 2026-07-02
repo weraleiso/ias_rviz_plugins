@@ -1014,6 +1014,9 @@ namespace rviz_plugin_view_animated
         }
     }
 
+    // Initialize static properties
+    int RVizPluginViewAnimated::si_resource_name_count;
+
     // Default constructor and destructor
     RVizPluginViewAnimated::RVizPluginViewAnimated()
     {

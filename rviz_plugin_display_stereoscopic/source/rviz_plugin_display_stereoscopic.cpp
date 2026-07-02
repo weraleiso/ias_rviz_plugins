@@ -238,6 +238,9 @@ namespace rviz_plugin_display_stereoscopic
         OGRE_FREE(uc_data_eye_right,Ogre::MEMCATEGORY_RENDERSYS);
     }
 
+    // Initialize static properties
+    int RVizPluginDisplayStereoscopic::si_resource_name_count;
+
     // Default constructor and destructor
     RVizPluginDisplayStereoscopic::RVizPluginDisplayStereoscopic()
     {

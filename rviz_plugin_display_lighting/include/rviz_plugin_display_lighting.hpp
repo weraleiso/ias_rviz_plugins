@@ -42,8 +42,6 @@
 
 namespace rviz_plugin_display_lighting
 {
-    static int si_resource_name_count=0; // Make resource names unique
-
     class RVizPluginDisplayLighting:public rviz_common::Display
     {
         Q_OBJECT
@@ -102,6 +100,7 @@ namespace rviz_plugin_display_lighting
         Ogre::Quaternion m_oqu_lighting_orientation;
 
         // Helper properties
+        static int si_resource_name_count; // Make resource names unique
         std::string m_s_rviz_plugin_namespace;
 
 

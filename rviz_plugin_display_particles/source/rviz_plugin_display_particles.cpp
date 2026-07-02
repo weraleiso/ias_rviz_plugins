@@ -449,6 +449,9 @@ namespace rviz_plugin_display_particles
         m_ogr_particlesystem->getAffector(3)->setParameter("keep_velocity",std::to_string(m_prp_particles_keep_velocity->getBool()));
     }
 
+    // Initialize static properties
+    int RVizPluginDisplayParticles::si_resource_name_count;
+
     // Default constructor and destructor
     RVizPluginDisplayParticles::RVizPluginDisplayParticles()
     {
